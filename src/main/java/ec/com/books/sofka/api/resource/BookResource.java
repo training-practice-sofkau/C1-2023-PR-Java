@@ -2,19 +2,16 @@ package ec.com.books.sofka.api.resource;
 
 import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.service.impl.BookServiceImpl;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.annotation.NonNull;
 
-import javax.validation.Valid;
 
-@RestController
+//@RestController
 @AllArgsConstructor
 public class BookResource {
     private final BookServiceImpl bookService;
@@ -40,21 +37,23 @@ public class BookResource {
     }
 
     @PostMapping("/books")
-    private Mono<ResponseEntity<BookDTO>> save(@Valid @RequestBody BookDTO bookDTO){
+    private Mono<ResponseEntity<BookDTO>> save(@RequestBody BookDTO bookDTO){
+
         return this.bookService
                 .saveBook(bookDTO)
-                .switchIfEmpty(Mono.error(new Throwable(HttpStatus.EXPECTATION_FAILED.toString())))
+                .switchIfEmpty(Mono.error(new Throwable(HttpStatus.NOT_ACCEPTABLE.toString())))
                 .map(bookDTO1 -> new ResponseEntity<>(bookDTO1,HttpStatus.CREATED))
-                .onErrorResume(throwable -> Mono.just(new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED)));
+                .onErrorResume(throwable -> Mono.just(new ResponseEntity<>(bookDTO, HttpStatus.NOT_ACCEPTABLE)));
+
     }
 
     @PutMapping("/books/{id}")
-    private Mono<ResponseEntity<BookDTO>> update(@PathVariable String id, @Valid @RequestBody BookDTO bookDTO){
+    private Mono<ResponseEntity<BookDTO>> update(@PathVariable String id, @RequestBody BookDTO bookDTO){
         return this.bookService
                 .updateBook(id, bookDTO)
-                .switchIfEmpty(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())))
+                .switchIfEmpty(Mono.error(new Throwable(HttpStatus.BAD_REQUEST.toString())))
                 .map(bookDTO1 -> new ResponseEntity<>(bookDTO1, HttpStatus.OK))
-                .onErrorResume(throwable -> Mono.just(new ResponseEntity<>(bookDTO, HttpStatus.NOT_FOUND)));
+                .onErrorResume(throwable -> Mono.just(new ResponseEntity<>(bookDTO, HttpStatus.BAD_REQUEST)));
     }
 
     @DeleteMapping("/books/{id}")
@@ -62,7 +61,7 @@ public class BookResource {
         return this.bookService
                 .deleteBook(id)
                 .switchIfEmpty(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())))
-                .map(s -> new ResponseEntity<>("Deleted "+s,HttpStatus.OK))
+                .map(s-> new ResponseEntity<>("Deleted "+s, HttpStatus.OK))
                 .onErrorResume(throwable -> Mono.just(new ResponseEntity<>(HttpStatus.NOT_FOUND)));
     }
 

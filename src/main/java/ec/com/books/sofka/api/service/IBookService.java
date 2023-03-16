@@ -27,4 +27,8 @@ public interface IBookService {
     BookDTO toDto(Book book);
 
     Book toEntity(BookDTO bookDTO);
+
+    //Validations
+
+    Boolean isNull(BookDTO bookDTO);
 }
