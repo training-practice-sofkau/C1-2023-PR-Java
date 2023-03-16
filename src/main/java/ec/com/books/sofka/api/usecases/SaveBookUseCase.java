@@ -14,8 +14,8 @@ import reactor.core.publisher.Mono;
 public class SaveBookUseCase implements SaveBook {
 
     private final IBookRepository bookRepository;
-
     private final ModelMapper mapper;
+
     @Override
     public Mono<BookDTO> save(BookDTO bookDTO) {
         return this.bookRepository.save(mapper.map(bookDTO, Book.class))
