@@ -15,18 +15,18 @@ import reactor.test.StepVerifier;
 
 
 @ExtendWith(MockitoExtension.class)
-class GetAllBooksUsecaseTest {
+class GetAllBooksUseCaseTest {
     @Mock
     IBookRepository repoMock;
 
     ModelMapper modelMapper;
 
-    GetAllBooksUsecase service;
+    GetAllBooksUseCase service;
 
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        service = new  GetAllBooksUsecase(repoMock, modelMapper);
+        service = new GetAllBooksUseCase(repoMock, modelMapper);
     }
 
     @Test

@@ -5,22 +5,21 @@ import ec.com.books.sofka.api.repository.IBookRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
-public class GetAllBooksUsecase implements Supplier<Flux<BookDTO>> {
+public class GetBookByIdUseCase implements Function<String, Mono<BookDTO>> {
     private final IBookRepository bookRepository;
 
     private final ModelMapper mapper;
-
     @Override
-    public Flux<BookDTO> get() {
+    public Mono<BookDTO> apply(String id) {
         return this.bookRepository
-                .findAll()
-                .switchIfEmpty(Flux.empty())
-                .map(book -> mapper.map(book, BookDTO.class));
+                .findById(id)
+                .switchIfEmpty(Mono.empty())
+                .map(book-> mapper.map(book, BookDTO.class));
     }
 }
