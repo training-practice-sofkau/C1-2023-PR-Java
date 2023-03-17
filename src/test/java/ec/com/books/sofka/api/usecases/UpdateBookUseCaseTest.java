@@ -15,6 +15,8 @@ import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
 class UpdateBookUseCaseTest {
 
@@ -53,5 +55,22 @@ class UpdateBookUseCaseTest {
 
         Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
         Mockito.verify(repoMock).save(ArgumentMatchers.any(Book.class));
+    }
+
+    @Test
+    @DisplayName("updateBook_NonSuccess")
+    void updateInvalidBook() {
+
+        var book = new Book("71392864528", "Arabian Nights", 1998);
+        book.setId("bookId");
+
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.empty());
+
+        var response = updateBookUseCase.update("",modelMapper.map(book, BookDTO.class));
+
+        StepVerifier.create(response)
+                .expectError(Throwable.class);
+
+        Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
     }
 }
