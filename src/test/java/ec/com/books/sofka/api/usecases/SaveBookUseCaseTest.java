@@ -4,6 +4,7 @@ import ec.com.books.sofka.api.domain.collection.Book;
 import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -31,14 +32,14 @@ class SaveBookUseCaseTest {
     }
 
     @Test
+    @DisplayName("saveBook_Success")
     void saveBook(){
 
         var book = new Book("1526894733", "Principles", 2017);
-        var bookDto = new BookDTO("1526894733", "Principles", 2017);
 
         Mockito.when(repoMock.save(ArgumentMatchers.any(Book.class))).thenReturn(Mono.just(book));
 
-        var response = saveBookUseCase.save(bookDto);
+        var response = saveBookUseCase.save(modelMapper.map(book, BookDTO.class));
 
         StepVerifier.create(response)
                 .expectNextCount(1)
