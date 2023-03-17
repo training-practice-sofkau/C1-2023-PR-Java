@@ -58,7 +58,7 @@ public class BookRouter {
 
     @Bean
     public RouterFunction<ServerResponse> deleteBook(DeleteBookUseCase deleteBookUseCase){
-        return route(DELETE("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
+        return route(DELETE("/books/{id}"),
                 request ->  deleteBookUseCase.delete(request.pathVariable("id"))
                         .flatMap(result -> ServerResponse.status(204)
                                 .contentType(MediaType.APPLICATION_JSON)
