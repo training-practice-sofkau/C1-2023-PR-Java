@@ -1,11 +1,14 @@
 package ec.com.books.sofka.api.usecases;
 
+import ec.com.books.sofka.api.RepoMocking;
 import ec.com.books.sofka.api.domain.collection.Book;
+import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,34 +20,32 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 class GetAllBooksUsecaseTest {
     @Mock
-    IBookRepository repoMock;
-
+    IBookRepository repository;
     ModelMapper modelMapper;
-
-    GetAllBooksUsecase service;
+    GetAllBooksUsecase getAllBooksUsecase;
 
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        service = new  GetAllBooksUsecase(repoMock, modelMapper);
+        getAllBooksUsecase = new  GetAllBooksUsecase(repository, modelMapper);
     }
 
     @Test
     @DisplayName("getAllBooks_Success")
     void getAllBooks() {
-        //Build the scenario you need
-        var fluxBooks = Flux.just(new Book("1", "title1", 2020), new Book("2", "title2", 2022));
 
-        Mockito.when(repoMock.findAll()).thenReturn(fluxBooks);
+        Mockito.when(repository.findAll()).
+                thenAnswer(InvocationOnMock -> {
+                    return RepoMocking.getFluxBooks(new Book("1", "1", 1));
+                });
 
-        var response = service.get();
+        Flux<BookDTO> response = getAllBooksUsecase.get();
 
         StepVerifier.create(response)
-                .expectNextCount(2)
+                .expectNextCount(6)
                 .verifyComplete();
 
-        Mockito.verify(repoMock).findAll();
-
+        Mockito.verify(repository).findAll();
     }
 
 }
