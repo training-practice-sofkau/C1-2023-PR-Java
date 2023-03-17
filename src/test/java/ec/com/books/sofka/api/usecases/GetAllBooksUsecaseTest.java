@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -45,6 +46,24 @@ class GetAllBooksUsecaseTest {
 
         Mockito.verify(repoMock).findAll();
 
+    }
+
+    @Test
+    @DisplayName("getAllBooks_Failed")
+    void getAllBooks_Failed(){
+
+       //Flux<String> error = Flux.error(new Throwable(HttpStatus.NO_CONTENT.toString()));
+
+        Mockito.when(repoMock.findAll()).thenReturn(Flux.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
+
+        var response = service.get();
+
+        StepVerifier.create(response)
+                .expectErrorMatches(throwable -> throwable instanceof Throwable &&
+                        throwable.getMessage().equals(HttpStatus.NOT_FOUND.toString()))
+                .verify();
+
+        Mockito.verify(repoMock).findAll();
     }
 
 }

@@ -5,6 +5,6 @@ import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
 
 @FunctionalInterface
-public interface SaveBook {
-    Mono<BookDTO> save(BookDTO bookDTO);
+public interface UpdateBook {
+    Mono<BookDTO> updateBook(String id,BookDTO bookDTO);
 }

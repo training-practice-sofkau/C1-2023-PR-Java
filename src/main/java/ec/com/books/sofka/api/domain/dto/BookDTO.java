@@ -17,24 +17,28 @@ import java.util.UUID;
 @NoArgsConstructor
 //@Validated
 public class BookDTO {
+
     private String id;
 
     @NotNull//(message = "ISBN can't be null")
-    @NotBlank//(message = "ISBN can't be blank")
+    //@NotBlank//(message = "ISBN can't be blank")
     @Size(min = 10, max = 12, message = "ISBN can have from 10 to 12 characters")
     private String isbn;
 
     @NotNull //(message = "Title can't be null")
-    @NotBlank//(message = "Title can't be blank")
+    //@NotBlank//(message = "Title can't be blank")
     private String title;
 
+
     private List<String> authors;
+
     private List<String> categories;
 
     @NotNull//(message = "can't be null - must be between 1900 and 3000")
     @Min(1900)
     @Max(3000)
     private Integer year;
+
 
     private Boolean available;
 
