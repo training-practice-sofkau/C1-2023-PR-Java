@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.validation.annotation.Validated;
 
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.UUID;
 //@Validated
 public class Book {
     @Id
-    private String id; //= UUID.randomUUID().toString().substring(0, 10);
+    private String id = UUID.randomUUID().toString().substring(0, 10);
 
     //@NotNull //(message = "ISBN can't be null")
     @Size(min = 10, max = 12, message = "ISBN can have from 10 to 12 characters")
@@ -39,6 +38,7 @@ public class Book {
     private Integer year;
 
     private Boolean available = true;
+
 
     public Book (String isbn, String title, Integer year){
         this.id = UUID.randomUUID().toString().substring(0, 10);

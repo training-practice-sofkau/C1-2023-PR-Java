@@ -2,11 +2,13 @@ package ec.com.books.sofka.api.router;
 
 import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.usecases.*;
+import jakarta.validation.Valid;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -37,6 +39,7 @@ public class BookRouter {
     }
 
     @Bean
+    //@Validated
     public RouterFunction<ServerResponse> saveBook(SaveBookUsecase saveBookUsecase){
         return route(POST("/books").and(accept(MediaType.APPLICATION_JSON)),
                 request -> request.bodyToMono(BookDTO.class)
@@ -45,18 +48,21 @@ public class BookRouter {
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .bodyValue(result))
 
-                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_ACCEPTABLE).build())));
+                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.BAD_REQUEST).build())));
     }
 
     @Bean
+    //@Validated
     public RouterFunction<ServerResponse> updateBook(UpdateBookUseCase updateBookUseCase){
-        return route(PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
-        request -> request.bodyToMono(BookDTO.class)
-                .flatMap(bookDTO -> updateBookUseCase.updateBook(request.pathVariable("id"), bookDTO)
-                        .flatMap(result -> ServerResponse.status(200)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .bodyValue(result))
-                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).build())));
+        return route(
+                PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
+                request -> request.bodyToMono(BookDTO.class)
+                        .flatMap(bookDTO -> updateBookUseCase.updateBook(request.pathVariable("id"), bookDTO)
+                                .flatMap(result -> ServerResponse.status(200)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(result)))
+                        .onErrorResume(throwable ->
+                                        ServerResponse.status(HttpStatus.BAD_REQUEST).build()));
     }
 
     @Bean

@@ -49,8 +49,8 @@ class GetAllBooksUsecaseTest {
     }
 
     @Test
-    @DisplayName("getAllBooks_Empty")
-    void getAllBooks_Empty(){
+    @DisplayName("getAllBooks_Failed")
+    void getAllBooks_Failed(){
 
        //Flux<String> error = Flux.error(new Throwable(HttpStatus.NO_CONTENT.toString()));
 
