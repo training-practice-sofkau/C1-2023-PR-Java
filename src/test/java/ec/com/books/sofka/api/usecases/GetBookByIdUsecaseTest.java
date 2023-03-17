@@ -3,52 +3,46 @@ package ec.com.books.sofka.api.usecases;
 import ec.com.books.sofka.api.domain.collection.Book;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetAllBooksUsecaseTest {
+class GetBookByIdUsecaseTest {
+
     @Mock
     IBookRepository repoMock;
-
     ModelMapper modelMapper;
-
-    GetAllBooksUsecase service;
+    GetBookByIdUsecase getBookByIdUsecase;
 
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        service = new  GetAllBooksUsecase(repoMock, modelMapper);
+        getBookByIdUsecase = new GetBookByIdUsecase(repoMock, modelMapper);
     }
 
     @Test
-    @DisplayName("getAllBooks_Success")
-    void getAllBooks() {
-        //Build the scenario you need
-        var fluxBooks = Flux.just(
-                new Book("1", "title1", 2020),
-                new Book("2", "title2", 2022),
-                new Book("3", "title3", 2020),
-                new Book("4", "title4", 2008));
+    void getBookById(){
 
-        Mockito.when(repoMock.findAll()).thenReturn(fluxBooks);
+        var book = Mono.just(new Book("1", "title1", 2020));
 
-        var response = service.get();
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(book);
+
+        var response = getBookByIdUsecase.apply("bookId");
 
         StepVerifier.create(response)
-                .expectNextCount(4)
+                .expectNextCount(1)
                 .verifyComplete();
 
-        Mockito.verify(repoMock).findAll();
-
+        Mockito.verify(repoMock).findById("bookId");
     }
 
 }

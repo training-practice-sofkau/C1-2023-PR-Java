@@ -1,6 +1,7 @@
 package ec.com.books.sofka.api.usecases;
 
 import ec.com.books.sofka.api.repository.IBookRepository;
+import ec.com.books.sofka.api.usecases.interfaces.DeleteBook;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -10,15 +11,14 @@ import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
-public class DeleteUsecase implements Function<String, Mono<String>> {
+public class DeleteUsecase implements DeleteBook {
     private final IBookRepository bookRepository;
-    private final ModelMapper modelMapper;
+
     @Override
-    public Mono<String> apply(String id) {
-        return this.bookRepository
+    public Mono<Void> delete(String id) {
+        return bookRepository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
-                .flatMap(book -> this.bookRepository.deleteById(book.getId())
-                        .then(Mono.just(id)));
+                .switchIfEmpty(Mono.error(new Throwable("Book not found")))
+                .flatMap(bookRepository::delete);
     }
 }
