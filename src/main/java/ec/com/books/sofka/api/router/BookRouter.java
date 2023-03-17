@@ -1,9 +1,7 @@
 package ec.com.books.sofka.api.router;
 
 import ec.com.books.sofka.api.domain.dto.BookDTO;
-import ec.com.books.sofka.api.usecases.GetAllBooksUsecase;
-import ec.com.books.sofka.api.usecases.GetBookByIdUsecase;
-import ec.com.books.sofka.api.usecases.SaveBookUsecase;
+import ec.com.books.sofka.api.usecases.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -43,10 +41,30 @@ public class BookRouter {
                         .flatMap(bookDTO -> saveBookUsecase.save(bookDTO)
                                 .flatMap(result -> ServerResponse.status(201)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .bodyValue(result))
 
+                                        .bodyValue(result))
                                 .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_ACCEPTABLE).build())));
     }
 
+    @Bean
+    public  RouterFunction<ServerResponse> updateBook(UpdateBookUseCase updateBookUse){
+        return route(PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
+                request -> request.bodyToMono(BookDTO.class)
+                        .flatMap(bookDTO -> updateBookUse.update(request.pathVariable("id"), bookDTO)
+                                .flatMap(result -> ServerResponse.status(201)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(result))
+                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_ACCEPTABLE).build())));
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> deleteBook(DeleteBookUseCase deleteBookUseCase) {
+        return route(DELETE("/books/{id}"),
+                request -> deleteBookUseCase.apply(request.pathVariable("id"))
+                        .flatMap(s -> ServerResponse.ok()
+                                .bodyValue(s+" deleted"))
+                        .onErrorResume(throwable -> ServerResponse.notFound().build()));
+
+    }
 
 }
