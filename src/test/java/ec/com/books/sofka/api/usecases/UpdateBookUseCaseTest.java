@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -22,9 +23,6 @@ class UpdateBookUseCaseTest {
     @Mock
     IBookRepository repoMock;
 
-    @Mock
-    SaveBookUsecase saveBookUsecase;
-
     ModelMapper modelMapper;
 
     UpdateBookUseCase updateBookUseCase;
@@ -32,8 +30,7 @@ class UpdateBookUseCaseTest {
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        saveBookUsecase = new SaveBookUsecase( repoMock, modelMapper);
-        updateBookUseCase = new UpdateBookUseCase(repoMock);
+        updateBookUseCase = new UpdateBookUseCase(repoMock, modelMapper);
     }
 
     @Test
@@ -48,28 +45,39 @@ class UpdateBookUseCaseTest {
         Mockito.when(repoMock.findById(Mockito.any(String.class))).thenReturn(monoBook);
 
         var updatedBook = new Book("1", "title3", 2023);
-        book.setId("1");
+        updatedBook.setId("1");
 
-        var monoUpdatedBookDTO = Mono.just(modelMapper.map(updatedBook, BookDTO.class));
+        Mockito.when(repoMock.save(Mockito.any(Book.class))).thenReturn(Mono.just(updatedBook));
 
-        //Mockito.when(repoMock.save(Mockito.any(Book.class))).thenReturn(monoUpdatedBook);
-
-        //Mockito.when(repoMock.save(updatedBook)).thenReturn(Mono.just(updatedBook));
-
-        Mockito.when(saveBookUsecase.save(modelMapper.map(updatedBook, BookDTO.class))
-                .thenReturn(monoUpdatedBookDTO));
-
-        Mockito.when(repoMock.save(updatedBook)).thenReturn(Mono.just(updatedBook));
-
-        var service =
-                updateBookUseCase.updateBook("1", modelMapper.map(updatedBook, BookDTO.class));
+        var service = updateBookUseCase.updateBook("1", modelMapper.map(updatedBook, BookDTO.class));
 
         StepVerifier.create(service)
-                .expectNext(modelMapper.map(updatedBook, BookDTO.class))
+                .expectNext( modelMapper.map(updatedBook, BookDTO.class))
                 .expectComplete()
                 .verify();
 
+        Mockito.verify(repoMock).findById("1");
         Mockito.verify(repoMock).save(updatedBook);
+
+    }
+
+    @Test
+    @DisplayName("updateBook_Failed")
+    void updateBook_Failed(){
+
+        var updatedBook = new Book("1", "title3", 2023);
+        updatedBook.setId("1");
+
+        Mockito.when(repoMock.findById(Mockito.any(String.class)))
+                .thenReturn(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
+
+        var service = updateBookUseCase.updateBook("1", modelMapper.map(updatedBook, BookDTO.class));
+
+        StepVerifier.create(service)
+                .expectError()
+                .verify();
+
+        Mockito.verify(repoMock).findById("1");
     }
 
 }
