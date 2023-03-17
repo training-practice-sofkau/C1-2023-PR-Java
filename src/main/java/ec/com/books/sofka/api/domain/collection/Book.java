@@ -16,11 +16,11 @@ import java.util.UUID;
 
 
 @Data
-//@AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "books")
 //@Validated
 public class Book {
+
     @Id
     private String id; //= UUID.randomUUID().toString().substring(0, 10);
 
@@ -40,12 +40,22 @@ public class Book {
 
     private Boolean available = true;
 
-    public Book (String isbn, String title, Integer year){
+    public Book(String isbn, String title, Integer year) {
         this.id = UUID.randomUUID().toString().substring(0, 10);
         this.isbn = isbn;
         this.title = title;
         this.authors = new ArrayList<>();
         this.categories = new ArrayList<>();
+        this.year = year;
+        this.available = true;
+    }
+
+    public Book(String id, String isbn, String title, List<String> authors, List<String> categories, Integer year) {
+        this.id = id;
+        this.isbn = isbn;
+        this.title = title;
+        this.authors = authors;
+        this.categories = categories;
         this.year = year;
         this.available = true;
     }

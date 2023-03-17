@@ -48,4 +48,13 @@ public class BookDTO {
         //this.available = true;
     }
 
+    public BookDTO (String id, String isbn, String title, List<String> authors, List<String> categories, Integer year){
+        this.id = id;
+        this.isbn = isbn;
+        this.title = title;
+        this.authors = authors;
+        this.categories = categories;
+        this.year = year;
+        this.available = true;
+    }
 }
