@@ -16,7 +16,7 @@ import java.util.UUID;
 
 
 @Data
-//@AllArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "books")
 //@Validated
