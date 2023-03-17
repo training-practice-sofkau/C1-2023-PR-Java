@@ -39,13 +39,12 @@ public class BookDTO {
     private Boolean available;
 
     public BookDTO (String isbn, String title, Integer year){
-        //this.id = UUID.randomUUID().toString().substring(0, 10);
         this.isbn = isbn;
         this.title = title;
-        //this.authors = new ArrayList<>();
-        //this.categories = new ArrayList<>();
+        this.authors = new ArrayList<>();
+        this.categories = new ArrayList<>();
         this.year = year;
-        //this.available = true;
+        this.available = true;
     }
 
 }
