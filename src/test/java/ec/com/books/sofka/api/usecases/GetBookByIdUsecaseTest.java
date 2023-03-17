@@ -6,43 +6,47 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetAllBooksUsecaseTest {
+class GetBookByIdUsecaseTest {
+
     @Mock
     IBookRepository repoMock;
-
-    ModelMapper modelMapper;
-
-    GetAllBooksUsecase service;
+    ModelMapper mapper;
+    GetBookByIdUsecase service;
 
     @BeforeEach
     void init(){
-        modelMapper = new ModelMapper();
-        service = new  GetAllBooksUsecase(repoMock, modelMapper);
+        mapper = new ModelMapper();
+        service = new  GetBookByIdUsecase(repoMock, mapper);
     }
 
     @Test
-    @DisplayName("getAllBooks_Success")
-    void getAllBooks() {
+    @DisplayName("getBookByID_Success")
+    void getBookByIDSuccess() {
         //Build the scenario you need
-        var fluxBooks = Flux.just(new Book("1", "title1", 2020), new Book("2", "title2", 2022));
+        var monoBook = Mono.just(new Book("1", "title1", 2020));
+        var bookID = "anyID";
 
-        Mockito.when(repoMock.findAll()).thenReturn(fluxBooks);
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(monoBook);
 
-        var response = service.get();
+        var response = service.apply(bookID);
 
         StepVerifier.create(response)
-                .expectNextCount(2)
+                .expectNextCount(1)
                 .verifyComplete();
 
-        Mockito.verify(repoMock).findAll();
+        Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
     }
+
 }
