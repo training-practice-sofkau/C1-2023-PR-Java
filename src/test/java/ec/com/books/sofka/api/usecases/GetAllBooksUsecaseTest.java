@@ -17,7 +17,7 @@ import reactor.test.StepVerifier;
 @ExtendWith(MockitoExtension.class)
 class GetAllBooksUsecaseTest {
     @Mock
-    IBookRepository repoMock;
+    IBookRepository iBookRepository;
 
     ModelMapper modelMapper;
 
@@ -26,7 +26,7 @@ class GetAllBooksUsecaseTest {
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        service = new  GetAllBooksUsecase(repoMock, modelMapper);
+        service = new  GetAllBooksUsecase(iBookRepository, modelMapper);
     }
 
     @Test
@@ -39,7 +39,7 @@ class GetAllBooksUsecaseTest {
                 new Book("3", "title3", 2020),
                 new Book("4", "title4", 2008));
 
-        Mockito.when(repoMock.findAll()).thenReturn(fluxBooks);
+        Mockito.when(iBookRepository.findAll()).thenReturn(fluxBooks);
 
         var response = service.get();
 
@@ -47,7 +47,7 @@ class GetAllBooksUsecaseTest {
                 .expectNextCount(4)
                 .verifyComplete();
 
-        Mockito.verify(repoMock).findAll();
+        Mockito.verify(iBookRepository).findAll();
 
     }
 

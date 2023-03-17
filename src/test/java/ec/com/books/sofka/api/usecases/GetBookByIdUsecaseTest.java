@@ -13,20 +13,18 @@ import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(MockitoExtension.class)
 class GetBookByIdUsecaseTest {
 
     @Mock
-    IBookRepository repoMock;
+    IBookRepository iBookRepository;
     ModelMapper modelMapper;
     GetBookByIdUsecase getBookByIdUsecase;
 
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        getBookByIdUsecase = new GetBookByIdUsecase(repoMock, modelMapper);
+        getBookByIdUsecase = new GetBookByIdUsecase(iBookRepository, modelMapper);
     }
 
     @Test
@@ -34,7 +32,7 @@ class GetBookByIdUsecaseTest {
 
         var book = Mono.just(new Book("1", "title1", 2020));
 
-        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(book);
+        Mockito.when(iBookRepository.findById(ArgumentMatchers.anyString())).thenReturn(book);
 
         var response = getBookByIdUsecase.apply("bookId");
 
@@ -42,7 +40,7 @@ class GetBookByIdUsecaseTest {
                 .expectNextCount(1)
                 .verifyComplete();
 
-        Mockito.verify(repoMock).findById("bookId");
+        Mockito.verify(iBookRepository).findById("bookId");
     }
 
 }

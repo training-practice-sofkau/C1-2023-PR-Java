@@ -18,7 +18,7 @@ import reactor.test.StepVerifier;
 class DeleteUsecaseTest {
 
     @Mock
-    IBookRepository repoMock;
+    IBookRepository iBookRepository;
 
     ModelMapper modelMapper;
 
@@ -27,7 +27,7 @@ class DeleteUsecaseTest {
     @BeforeEach
     void init(){
         modelMapper = new ModelMapper();
-        deleteUsecase = new DeleteUsecase(repoMock);
+        deleteUsecase = new DeleteUsecase(iBookRepository);
     }
 
     @Test
@@ -36,17 +36,16 @@ class DeleteUsecaseTest {
         var book1 = new Book("1", "Nice Book", 2000);
         var book = Mono.just(book1);
 
-        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(book);
-        Mockito.when(repoMock.delete(ArgumentMatchers.any(Book.class))).thenReturn(Mono.empty());
+        Mockito.when(iBookRepository.findById(ArgumentMatchers.anyString())).thenReturn(book);
+        Mockito.when(iBookRepository.delete(ArgumentMatchers.any(Book.class))).thenReturn(Mono.empty());
 
         var response = deleteUsecase.delete(ArgumentMatchers.anyString());
 
         StepVerifier.create(response)
                 .expectNextCount(0)
-//                .expectNext(modelMapper.map(book, Book.class))
                 .verifyComplete();
 
-        Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
-        Mockito.verify(repoMock).delete(ArgumentMatchers.any(Book.class));
+        Mockito.verify(iBookRepository).findById(ArgumentMatchers.anyString());
+        Mockito.verify(iBookRepository).delete(ArgumentMatchers.any(Book.class));
     }
 }
