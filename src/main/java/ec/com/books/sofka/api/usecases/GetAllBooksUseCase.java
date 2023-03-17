@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 @Service
 @AllArgsConstructor
-public class GetAllBooksUsecase implements Supplier<Flux<BookDTO>> {
+public class GetAllBooksUseCase implements Supplier<Flux<BookDTO>> {
     private final IBookRepository bookRepository;
 
     private final ModelMapper mapper;
@@ -20,7 +20,7 @@ public class GetAllBooksUsecase implements Supplier<Flux<BookDTO>> {
     public Flux<BookDTO> get() {
         return this.bookRepository
                 .findAll()
-                .switchIfEmpty(Flux.empty())
+                .switchIfEmpty(Flux.error(new Throwable()))
                 .map(book -> mapper.map(book, BookDTO.class));
     }
 }

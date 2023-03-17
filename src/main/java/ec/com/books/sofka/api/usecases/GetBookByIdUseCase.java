@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
-public class GetBookByIdUsecase implements Function<String, Mono<BookDTO>> {
+public class GetBookByIdUseCase implements Function<String, Mono<BookDTO>> {
     private final IBookRepository bookRepository;
 
     private final ModelMapper mapper;
@@ -19,7 +19,7 @@ public class GetBookByIdUsecase implements Function<String, Mono<BookDTO>> {
     public Mono<BookDTO> apply(String id) {
         return this.bookRepository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new Throwable()))
                 .map(book-> mapper.map(book, BookDTO.class));
     }
 }
