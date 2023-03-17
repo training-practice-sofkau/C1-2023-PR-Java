@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -21,13 +20,13 @@ import java.util.UUID;
 public class Book {
     @Id
     private String id;
-    @NonNull
+
     private String isbn;
-    @NonNull
+
     private String title;
     private List<String> authors = new ArrayList<>();
     private List<String> categories = new ArrayList<>();
-    @NonNull
+
     private Integer year;
     private Boolean available = true;
 

@@ -1,5 +1,6 @@
 package ec.com.books.sofka.api.router;
 
+import ec.com.books.sofka.api.NullParameterException.NullParameterException;
 import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.usecases.*;
 import org.springframework.context.annotation.Bean;
@@ -42,14 +43,14 @@ public class BookRouter {
 
     @Bean
     public RouterFunction<ServerResponse> saveBook(SaveBookUseCase saveBookUsecase){
-        return route(POST("/books").and(accept(MediaType.APPLICATION_JSON)),
-                request -> request.bodyToMono(BookDTO.class)
-                        .flatMap(bookDTO -> saveBookUsecase.save(bookDTO)
-                                .flatMap(result -> ServerResponse.status(201)
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .bodyValue(result))
+            return route(POST("/books").and(accept(MediaType.APPLICATION_JSON)),
+                    request -> request.bodyToMono(BookDTO.class)
+                            .flatMap(bookDTO -> saveBookUsecase.save(bookDTO)
+                                    .flatMap(result -> ServerResponse.status(201)
+                                            .contentType(MediaType.APPLICATION_JSON)
+                                            .bodyValue(result))
 
-                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_ACCEPTABLE).build())));
+                                    .onErrorResume(throwable -> ServerResponse.badRequest().bodyValue("Invalid request data: " + throwable.getMessage()))));
     }
 
     @Bean
@@ -61,7 +62,7 @@ public class BookRouter {
                         .flatMap(result -> ServerResponse.status(200)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(result))
-                        .onErrorResume(throwable -> ServerResponse.notFound().build()));
+                        .onErrorResume(throwable -> ServerResponse.badRequest().bodyValue("Invalid request data: " + throwable.getMessage())));
     }
 
     @Bean
