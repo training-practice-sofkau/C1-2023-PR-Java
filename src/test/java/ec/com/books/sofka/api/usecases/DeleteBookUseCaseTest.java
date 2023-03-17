@@ -48,4 +48,19 @@ class DeleteBookUseCaseTest {
 
         Mockito.verify(repoMock).deleteById(ArgumentMatchers.anyString());
     }
+
+    @Test
+    @DisplayName("deleteInvalidBook_NonSuccess")
+    void deleteInvalidBook(){
+
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.empty());
+
+        var response = deleteBookUseCase.delete("");
+
+        StepVerifier.create(response)
+                .expectError(Throwable.class);
+
+        Mockito.verify(repoMock).findById("");
+
+    }
 }
