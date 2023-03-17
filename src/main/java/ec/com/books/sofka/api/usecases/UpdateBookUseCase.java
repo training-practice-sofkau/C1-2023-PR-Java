@@ -27,6 +27,6 @@ public class UpdateBookUseCase implements UpdateBook {
                     return bookRepository.save(modelMapper.map(bookDTO, Book.class));
                 })
                 .map(book -> modelMapper.map(book, BookDTO.class))
-                .onErrorResume(error -> Mono.error(new RuntimeException("Student not found")));
+                .onErrorResume(error -> Mono.error(new RuntimeException("Book not found")));
     }
 }
