@@ -63,8 +63,6 @@ public class BookServiceImpl implements IBookService {
                 .switchIfEmpty(Mono.empty())
                 .flatMap(book -> this.bookRepository.deleteById(book.getId())
                         .then(Mono.just(id))).switchIfEmpty(Mono.empty());
-                //.flatMap(Mono::just);
-
     }
 
     @Override

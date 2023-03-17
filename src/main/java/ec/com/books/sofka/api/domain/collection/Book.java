@@ -1,13 +1,12 @@
 package ec.com.books.sofka.api.domain.collection;
 
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.validation.annotation.Validated;
 
 
 import java.util.ArrayList;
@@ -16,28 +15,20 @@ import java.util.UUID;
 
 
 @Data
-//@AllArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "books")
-//@Validated
 public class Book {
     @Id
-    private String id; //= UUID.randomUUID().toString().substring(0, 10);
-
-    //@NotNull //(message = "ISBN can't be null")
-    @Size(min = 10, max = 12, message = "ISBN can have from 10 to 12 characters")
+    private String id;
+    @NonNull
     private String isbn;
-
-    //@NotNull //(message = "Title can't be null")
+    @NonNull
     private String title;
-
     private List<String> authors = new ArrayList<>();
-
     private List<String> categories = new ArrayList<>();
-
-    //@NotNull //(message = "can't be null - must be between 1900 and 3000")
+    @NonNull
     private Integer year;
-
     private Boolean available = true;
 
     public Book (String isbn, String title, Integer year){
@@ -49,5 +40,7 @@ public class Book {
         this.year = year;
         this.available = true;
     }
-
+    public void setId(String id) {
+        this.id = id;
+    }
 }
