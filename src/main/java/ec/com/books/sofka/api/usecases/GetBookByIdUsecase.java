@@ -4,6 +4,7 @@ import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +20,7 @@ public class GetBookByIdUsecase implements Function<String, Mono<BookDTO>> {
     public Mono<BookDTO> apply(String id) {
         return this.bookRepository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())))
                 .map(book-> mapper.map(book, BookDTO.class));
     }
 }
