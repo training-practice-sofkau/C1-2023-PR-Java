@@ -36,7 +36,7 @@ class GetBookByIdUsecaseTest {
     void getBookByIDSuccess() {
         //Build the scenario you need
         var monoBook = Mono.just(new Book("1", "title1", 2020));
-        var bookID = "anyID";
+        var bookID = "anyId";
 
         Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(monoBook);
 
