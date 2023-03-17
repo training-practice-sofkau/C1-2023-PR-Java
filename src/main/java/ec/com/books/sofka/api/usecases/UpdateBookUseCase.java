@@ -34,7 +34,7 @@ public class UpdateBookUseCase implements UpdateBook {
                     bookDTO.setId(book.getId());
                     return bookRepository.save(mapper.map(bookDTO, Book.class));
                 })
-                .map(book -> mapper.map(book, BookDTO.class))
-                .onErrorResume(error -> Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
+                .map(book -> mapper.map(book, BookDTO.class));
+                //.onErrorResume(error -> Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
     }
 }

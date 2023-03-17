@@ -56,7 +56,8 @@ public class BookRouter {
     public RouterFunction<ServerResponse> updateBook(UpdateBookUseCase updateBookUseCase){
         return route(PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
                 request -> request.bodyToMono(BookDTO.class)
-                        .flatMap(bookDTO -> updateBookUseCase.updateBook(request.pathVariable("id"), bookDTO)
+                        .flatMap(bookDTO -> updateBookUseCase.updateBook(request.pathVariable("id"),
+                                        bookDTO)
                                 .flatMap(result -> ServerResponse.status(201)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .bodyValue(result))
