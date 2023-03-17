@@ -37,17 +37,18 @@ class UpdateBookUseCaseTest {
     void updateBook(){
 
         var book = new Book("71392864528", "Arabian Nights", 1998);
-        var updatedBook = new Book("15155959488", "Atomic Habits", 2019);
+        book.setId("bookId");
 
-        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.just(book));
+        Mockito.when(repoMock.findById("bookId")).thenReturn(Mono.just(book));
 
-        Mockito.when(repoMock.save(ArgumentMatchers.any(Book.class))).thenReturn(Mono.just(updatedBook));
+        Mockito.when(repoMock.save(ArgumentMatchers.any(Book.class))).thenReturn(Mono.just(book));
 
         var response = updateBookUseCase.update("bookId",
-                modelMapper.map(updatedBook, BookDTO.class));
+                modelMapper.map(book, BookDTO.class));
 
         StepVerifier.create(response)
-                .expectNextCount(1)
+                .expectNext(modelMapper.map(book, BookDTO.class))
+                .expectNextCount(0)
                 .verifyComplete();
 
         Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
