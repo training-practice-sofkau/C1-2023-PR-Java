@@ -12,17 +12,17 @@ import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
-public class DeleteUsecase implements Function<String, Mono<Void>> {
+public class DeleteUsecase implements Function<String, Mono<String>> {
     private final IBookRepository bookRepository;
 
     private final ModelMapper mapper;
 
     @Override
-    public Mono<Void> apply(String id) {
+    public Mono<String> apply(String id) {
         return this.bookRepository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new RuntimeException("Student not found")))
-                .flatMap(bookRepository::delete)
+                .flatMap(book -> bookRepository.delete(book).thenReturn(id))
                 .onErrorResume(Mono::error);
     }
 }

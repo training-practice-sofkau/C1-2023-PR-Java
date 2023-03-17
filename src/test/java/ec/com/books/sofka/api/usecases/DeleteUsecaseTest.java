@@ -44,7 +44,7 @@ class DeleteUsecaseTest {
                     return Mono.just(Void.TYPE);
                 });
 
-        Mono<Void> response = deleteUsecase.apply("1");
+        Mono<String> response = deleteUsecase.apply("1");
 
         StepVerifier.create(response)
                 .expectNextCount(1)
