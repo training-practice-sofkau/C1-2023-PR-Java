@@ -1,9 +1,11 @@
 package ec.com.books.sofka.api.router;
 
 import ec.com.books.sofka.api.domain.dto.BookDTO;
+import ec.com.books.sofka.api.usecases.DeleteBookUseCase;
 import ec.com.books.sofka.api.usecases.GetAllBooksUsecase;
 import ec.com.books.sofka.api.usecases.GetBookByIdUsecase;
 import ec.com.books.sofka.api.usecases.SaveBookUsecase;
+import ec.com.books.sofka.api.usecases.UpdateBookUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -49,4 +51,33 @@ public class BookRouter {
     }
 
 
+    @Bean
+    public RouterFunction<ServerResponse> updateBook(UpdateBookUseCase updateBookUseCase) {
+        return route(
+                PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
+                request -> request.bodyToMono(BookDTO.class)
+                        .flatMap(bookDTO -> updateBookUseCase.update(request.pathVariable("id"), bookDTO)
+                                .flatMap(result -> ServerResponse.ok()
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(result))
+                                .onErrorResume(throwable -> ServerResponse.badRequest()
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(throwable.getMessage())))
+        );
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> deleteBook(DeleteBookUseCase deleteBookUseCase) {
+        return route(
+                DELETE("/books/{id}"),
+                request -> deleteBookUseCase.delete(request.pathVariable("id"))
+                        .thenReturn(ServerResponse.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue("Deleted book with id: " + request.pathVariable("id")))
+                        .flatMap(response -> response)
+                        .onErrorResume(throwable -> ServerResponse.badRequest()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(throwable.getMessage()))
+        );
+    }
 }
