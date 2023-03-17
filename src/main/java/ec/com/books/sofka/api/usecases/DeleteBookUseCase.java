@@ -22,7 +22,7 @@ public class DeleteBookUseCase implements Function<String, Mono<Void>> {
         return this.bookRepository
                 .findById(id)
                 .switchIfEmpty(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())))
-                .flatMap(book -> this.bookRepository.deleteById(book.getId()))
-                .onErrorResume(error -> Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
+                .flatMap(book -> this.bookRepository.deleteById(book.getId()));
+                //.onErrorResume(error -> Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
     }
 }
