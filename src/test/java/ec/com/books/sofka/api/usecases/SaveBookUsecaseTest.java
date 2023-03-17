@@ -60,12 +60,13 @@ class SaveBookUsecaseTest {
         var book = new Book("1", "title1", 2020);
 
         Mockito.when(repoMock.save(Mockito.any(Book.class)))
-                .thenReturn(Mono.error(new Throwable(HttpStatus.NOT_ACCEPTABLE.toString())));
+                .thenReturn(Mono.error(new Throwable(HttpStatus.BAD_REQUEST.toString())));
 
         var service = saveBookUsecase.save(modelMapper.map(book, BookDTO.class));
 
         StepVerifier.create(service)
-                .expectError()
+                .expectErrorMatches(throwable -> throwable instanceof Throwable &&
+                        throwable.getMessage().equals(HttpStatus.BAD_REQUEST.toString()))
                 .verify();
 
         Mockito.verify(repoMock).save(book);

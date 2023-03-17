@@ -62,7 +62,8 @@ class DeleteBookUseCaseTest {
         var service = deleteBookUseCase.apply("1");
 
         StepVerifier.create(service)
-                .expectError()
+                .expectErrorMatches(throwable -> throwable instanceof Throwable &&
+                        throwable.getMessage().equals(HttpStatus.NOT_FOUND.toString()))
                 .verify();
 
         Mockito.verify(repoMock).findById("1");

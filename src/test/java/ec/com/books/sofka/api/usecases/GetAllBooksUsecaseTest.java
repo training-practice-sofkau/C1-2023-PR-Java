@@ -59,7 +59,8 @@ class GetAllBooksUsecaseTest {
         var response = service.get();
 
         StepVerifier.create(response)
-                .expectError()
+                .expectErrorMatches(throwable -> throwable instanceof Throwable &&
+                        throwable.getMessage().equals(HttpStatus.NOT_FOUND.toString()))
                 .verify();
 
         Mockito.verify(repoMock).findAll();
