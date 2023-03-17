@@ -46,4 +46,5 @@ class SaveBookUsecaseTest {
                 .verifyComplete();
         Mockito.verify(repoMock).save(mapper.map(bookDTO, Book.class));
     }
+
 }

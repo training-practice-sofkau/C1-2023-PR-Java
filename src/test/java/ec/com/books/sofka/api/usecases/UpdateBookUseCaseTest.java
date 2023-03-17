@@ -32,8 +32,8 @@ class UpdateBookUseCaseTest {
     }
 
     @Test
-    @DisplayName("updateStudent_Success")
-    void updateStudent(){
+    @DisplayName("updateBook_Success")
+    void updateBook(){
         var bookID = "ID1";
         var newBook = new Book("1", "title1", 2020);
         newBook.setId("AnyID");
@@ -53,6 +53,28 @@ class UpdateBookUseCaseTest {
                 .verifyComplete();
         Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
         Mockito.verify(repoMock).save(ArgumentMatchers.any(Book.class));
+    }
+
+    @Test
+    @DisplayName("updateBookById_NonSuccess")
+    void updateBookByNonExistingID(){
+        String studentID = "AnyID";
+        var newBook = new Book("1", "title1", 2020);
+        newBook.setId(studentID);
+        var newMonoBook = Mono.just(newBook);
+
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.empty());
+
+        var response = service.apply(studentID,
+                mapper.map(newBook, BookDTO.class));
+
+        StepVerifier.create(response)
+                .expectNextCount(0)
+                .verifyComplete();
+        Mockito.verify(repoMock).findById(studentID);
+        Mockito.verify(repoMock, Mockito.never()).save(ArgumentMatchers.any(Book.class));
+
+
     }
 
 
