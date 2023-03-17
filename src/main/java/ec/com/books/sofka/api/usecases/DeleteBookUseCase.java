@@ -16,6 +16,6 @@ public class DeleteBookUseCase implements DeleteBook {
     public Mono<Void> delete(String id) {
         return bookRepository.findById(id)
                 .switchIfEmpty(Mono.error(new Throwable("Book not found")))
-                .flatMap(bookRepository::delete);
+                .flatMap(book -> bookRepository.deleteById(book.getId()));
     }
 }
