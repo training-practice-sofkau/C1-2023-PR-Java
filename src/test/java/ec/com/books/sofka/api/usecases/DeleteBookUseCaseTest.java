@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -39,7 +40,7 @@ class DeleteBookUseCaseTest {
 
         Mockito.when(repoMock.findById(Mockito.any(String.class))).thenReturn(Mono.just(book));
 
-        //Mockito.when(repoMock.deleteById(Mockito.any(String.class)).thenReturn(Mono.empty()));
+        Mockito.when(repoMock.deleteById(Mockito.any(String.class))).thenReturn(Mono.empty());
 
         var service = deleteBookUseCase.apply("1");
 
@@ -47,6 +48,24 @@ class DeleteBookUseCaseTest {
                 .expectComplete()
                 .verify();
 
+        Mockito.verify(repoMock).findById("1");
         Mockito.verify(repoMock).deleteById("1");
     }
+
+    @Test
+    @DisplayName("deleteBookById_Failed")
+    void deleteBookById_Failed(){
+
+        Mockito.when(repoMock.findById(Mockito.any(String.class)))
+                .thenReturn(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
+
+        var service = deleteBookUseCase.apply("1");
+
+        StepVerifier.create(service)
+                .expectError()
+                .verify();
+
+        Mockito.verify(repoMock).findById("1");
+    }
+
 }
