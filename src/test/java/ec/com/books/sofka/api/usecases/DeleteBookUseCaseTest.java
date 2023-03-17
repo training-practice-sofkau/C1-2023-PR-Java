@@ -3,6 +3,7 @@ package ec.com.books.sofka.api.usecases;
 import ec.com.books.sofka.api.domain.collection.Book;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -30,6 +31,7 @@ class DeleteBookUseCaseTest {
     }
 
     @Test
+    @DisplayName("deleteBook_Success")
     void deleteBook(){
 
         var book = Mono.just(new Book("15958432975", "Arabian Nights", 1998));
