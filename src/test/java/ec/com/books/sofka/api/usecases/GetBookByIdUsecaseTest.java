@@ -3,6 +3,7 @@ package ec.com.books.sofka.api.usecases;
 import ec.com.books.sofka.api.domain.collection.Book;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -46,6 +47,21 @@ class GetBookByIdUsecaseTest {
                 .verifyComplete();
 
         Mockito.verify(repoMock).findById("bookId");
+    }
+
+    @Test
+    @DisplayName("getBookById_Fail")
+    void getBookById_Fail() {
+
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.empty());
+
+        var response = service.apply("");
+
+        StepVerifier.create(response)
+                .expectError(Throwable.class);
+
+        Mockito.verify(repoMock).findById("");
+
     }
 
 }

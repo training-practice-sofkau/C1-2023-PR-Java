@@ -19,7 +19,8 @@ public class GetBookByIdUsecase implements Function<String, Mono<BookDTO>> {
     public Mono<BookDTO> apply(String id) {
         return this.bookRepository
                 .findById(id)
-                .switchIfEmpty(Mono.empty())
-                .map(book-> mapper.map(book, BookDTO.class));
+                .switchIfEmpty(Mono.error(new Throwable("Book not found")))
+                .map(book-> mapper.map(book, BookDTO.class))
+                        .onErrorResume(Mono::error);
     }
 }
