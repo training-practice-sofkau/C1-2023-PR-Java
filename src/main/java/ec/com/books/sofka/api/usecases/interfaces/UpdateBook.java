@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 @FunctionalInterface
 public interface UpdateBook {
-    Mono<BookDTO> updateBook(String id, @Valid BookDTO bookDTO);
+    Mono<BookDTO> updateBook(String id,BookDTO bookDTO);
 }

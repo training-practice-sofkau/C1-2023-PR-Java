@@ -1,5 +1,6 @@
 package ec.com.books.sofka.api.usecases;
 
+import ec.com.books.sofka.api.domain.collection.Book;
 import ec.com.books.sofka.api.domain.dto.BookDTO;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import ec.com.books.sofka.api.usecases.interfaces.UpdateBook;
@@ -19,7 +20,7 @@ public class UpdateBookUseCase implements UpdateBook {
 
     private final IBookRepository bookRepository;
 
-    //private final ModelMapper mapper;
+    private final ModelMapper mapper;
 
     private SaveBookUsecase saveBook;
 
@@ -31,7 +32,9 @@ public class UpdateBookUseCase implements UpdateBook {
                 .switchIfEmpty(Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())))
                 .flatMap(book -> {
                     bookDTO.setId(book.getId());
-                    return saveBook.save(bookDTO);
-                });
+                    return bookRepository.save(mapper.map(bookDTO, Book.class));
+                })
+                .map(book -> mapper.map(book, BookDTO.class))
+                .onErrorResume(error -> Mono.error(new Throwable(HttpStatus.NOT_FOUND.toString())));
     }
 }

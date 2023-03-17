@@ -54,24 +54,23 @@ public class BookRouter {
     @Bean
     //@Validated
     public RouterFunction<ServerResponse> updateBook(UpdateBookUseCase updateBookUseCase){
-        return route(
-                PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
+        return route(PUT("/books/{id}").and(accept(MediaType.APPLICATION_JSON)),
                 request -> request.bodyToMono(BookDTO.class)
                         .flatMap(bookDTO -> updateBookUseCase.updateBook(request.pathVariable("id"), bookDTO)
-                                .flatMap(result -> ServerResponse.status(200)
+                                .flatMap(result -> ServerResponse.status(201)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .bodyValue(result)))
-                        .onErrorResume(throwable ->
-                                        ServerResponse.status(HttpStatus.BAD_REQUEST).build()));
+                                        .bodyValue(result))
+                                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).build())));
     }
 
     @Bean
     public RouterFunction<ServerResponse> deleteBook(DeleteBookUseCase deleteBookUseCase){
         return route(DELETE("/books/{id}"),
                 request -> deleteBookUseCase.apply(request.pathVariable("id"))
-                        .flatMap(s -> ServerResponse.ok()
+                        .thenReturn(ServerResponse.ok()
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue("book deleted"))
+                        .flatMap(serverResponseMono -> serverResponseMono)
                         .onErrorResume(throwable -> ServerResponse.status(HttpStatus.NOT_FOUND).build()));
     }
 

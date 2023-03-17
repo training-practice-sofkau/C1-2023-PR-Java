@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 @FunctionalInterface
 public interface SaveBook {
-    Mono<BookDTO> save(@Valid BookDTO bookDTO);
+    Mono<BookDTO> save(BookDTO bookDTO);
 }
