@@ -15,6 +15,8 @@ import org.modelmapper.ModelMapper;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.List;
+
 @ExtendWith(MockitoExtension.class)
 class SaveBookUseCaseTest {
 
@@ -46,6 +48,23 @@ class SaveBookUseCaseTest {
                 .verifyComplete();
 
         Mockito.verify(repoMock).save(ArgumentMatchers.any(Book.class));
+    }
+
+    @Test
+    @DisplayName("saveBook_NonSuccess")
+    void saveBookFailed(){
+
+        var book = new Book("1526894733", "Principles", 2017);
+
+        Mockito.when(repoMock.save(ArgumentMatchers.any(Book.class))).thenReturn(Mono.empty());
+
+        var response = saveBookUseCase.save(modelMapper.map(book, BookDTO.class));
+
+        StepVerifier.create(response)
+                .expectError(Throwable.class);
+
+        Mockito.verify(repoMock).save(ArgumentMatchers.any(Book.class));
 
     }
+
 }
