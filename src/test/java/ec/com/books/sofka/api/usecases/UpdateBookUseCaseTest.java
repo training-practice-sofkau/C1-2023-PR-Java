@@ -73,8 +73,6 @@ class UpdateBookUseCaseTest {
                 .verifyComplete();
         Mockito.verify(repoMock).findById(studentID);
         Mockito.verify(repoMock, Mockito.never()).save(ArgumentMatchers.any(Book.class));
-
-
     }
 
 

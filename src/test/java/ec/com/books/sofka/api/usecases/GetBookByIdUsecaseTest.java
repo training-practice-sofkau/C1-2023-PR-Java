@@ -49,4 +49,19 @@ class GetBookByIdUsecaseTest {
         Mockito.verify(repoMock).findById(ArgumentMatchers.anyString());
     }
 
+    @Test
+    @DisplayName("getBookById_NonSuccess")
+    void getBookByNonExistingID(){
+        var studentID = "ID1";
+
+        Mockito.when(repoMock.findById(studentID)).thenReturn(Mono.empty());
+
+        var response = service.apply(studentID);
+
+        StepVerifier.create(response)
+                .expectNextCount(0)
+                .verifyComplete();
+        Mockito.verify(repoMock).findById(studentID);
+    }
+
 }
