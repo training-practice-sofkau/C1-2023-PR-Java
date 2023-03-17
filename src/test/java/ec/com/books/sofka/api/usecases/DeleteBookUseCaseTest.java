@@ -3,6 +3,7 @@ package ec.com.books.sofka.api.usecases;
 import ec.com.books.sofka.api.domain.collection.Book;
 import ec.com.books.sofka.api.repository.IBookRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -52,4 +53,19 @@ class DeleteBookUseCaseTest {
 
     }
 
-}
+    @Test
+    @DisplayName("deleteBook_Fail")
+    void deleteBook_Fail() {
+
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.empty());
+
+        var response = service.delete("");
+
+        StepVerifier.create(response)
+                .expectError(Throwable.class);
+
+        Mockito.verify(repoMock).findById("");
+
+    }
+
+    }
