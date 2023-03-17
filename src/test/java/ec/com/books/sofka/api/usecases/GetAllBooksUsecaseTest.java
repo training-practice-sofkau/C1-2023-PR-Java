@@ -44,7 +44,5 @@ class GetAllBooksUsecaseTest {
                 .verifyComplete();
 
         Mockito.verify(repoMock).findAll();
-
     }
-
 }
