@@ -20,12 +20,11 @@ public class UpdateBookUseCase implements UpdateBook {
     @Override
     public Mono<BookDTO> update(String id, BookDTO bookDTO) {
         return bookRepository.findById(id)
-                //.switchIfEmpty(Mono.error(new Throwable("Book not found")))
+                .switchIfEmpty(Mono.error(new Throwable("Book not found")))
                 .flatMap(book -> {
                     bookDTO.setId(book.getId());
                     return bookRepository.save(mapper.map(bookDTO, Book.class))
                             .map(b ->mapper.map(b, BookDTO.class));
-                    //return saveBookUsecase.save(bookDTO);
-                });
+                }).onErrorResume(throwable -> Mono.error(throwable));
     }
 }
