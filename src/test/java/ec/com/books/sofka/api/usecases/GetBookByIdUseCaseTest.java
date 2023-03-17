@@ -47,4 +47,17 @@ class GetBookByIdUseCaseTest {
         Mockito.verify(repoMock).findById("bookId");
     }
 
+    @Test
+    @DisplayName("getBookByWrongId_NonSuccess")
+    void getBookByWrongId() {
+
+        Mockito.when(repoMock.findById(ArgumentMatchers.anyString())).thenReturn(Mono.empty());
+
+        var response = getBookByIdUsecase.apply("bookId");
+
+        StepVerifier.create(response)
+                .expectError(Throwable.class);
+
+        Mockito.verify(repoMock).findById("bookId");
+    }
 }
