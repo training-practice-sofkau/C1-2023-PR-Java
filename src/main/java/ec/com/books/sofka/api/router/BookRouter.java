@@ -1,22 +1,33 @@
 package ec.com.books.sofka.api.router;
 
 import ec.com.books.sofka.api.domain.dto.BookDTO;
+import ec.com.books.sofka.api.domain.student.StudentDTO;
 import ec.com.books.sofka.api.usecases.GetAllBooksUsecase;
 import ec.com.books.sofka.api.usecases.GetBookByIdUsecase;
+import ec.com.books.sofka.api.usecases.LendBookUseCase;
 import ec.com.books.sofka.api.usecases.SaveBookUsecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
 public class BookRouter {
+
+    private WebClient studentAPI;
+
+    public BookRouter(){
+        studentAPI = WebClient.create("http://localhost:8081");
+    }
+
     @Bean
     public RouterFunction<ServerResponse> getAllBooks(GetAllBooksUsecase getAllBooksUsecase){
         return route(GET("/books"),
@@ -34,6 +45,25 @@ public class BookRouter {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .bodyValue(bookDTO))
                         .onErrorResume(throwable -> ServerResponse.notFound().build()));
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> lendBook(LendBookUseCase lendBookUseCase){
+        return route(POST("/books/{id}/lend/{id_e}"),
+                request ->
+                    studentAPI.get()
+                            .uri("/students/"+request.pathVariable("id_e"))
+                            .retrieve()
+                            .bodyToMono(StudentDTO.class)
+                            //.switchIfEmpty(Mono.empty())
+                            .flatMap(studentDTO -> lendBookUseCase
+                                    .lend(request.pathVariable("id"),studentDTO.getId())
+                                    .flatMap(bookDTO -> ServerResponse.ok()
+                                            .contentType(MediaType.APPLICATION_JSON)
+                                            .bodyValue(bookDTO))
+                                    .onErrorResume(throwable -> ServerResponse.badRequest().build())));
+                            //.onErrorResume(throwable -> ServerResponse.badRequest().bodyValue(StudentDTO.class)));
+
     }
 
     @Bean
